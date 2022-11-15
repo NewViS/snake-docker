@@ -100,7 +100,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     main(
         load_path=args.load_path,
-        render=args.render,
+        #render=args.render,
+        render = True,
         times=args.times,
         seed=args.seed,
         block_size=args.block_size,
