@@ -10,11 +10,18 @@ class Block:
 
 
 class Snake:
-    DIRECTIONS = {
+    """DIRECTIONS = {
         'UP': ((0, 1), 'LEFT', 'RIGHT'),
         'DOWN': ((0, -1), 'RIGHT', 'LEFT'),
         'LEFT': ((-1, 0), 'DOWN', 'UP'),
         'RIGHT': ((1, 0), 'UP', 'DOWN'),
+    }"""
+
+    DIRECTIONS = {
+        'UP': ((0, 1), 'UP', 'UP', 'LEFT', 'RIGHT'),
+        'DOWN': ((0, -1), 'DOWN', 'DOWN', 'LEFT', 'RIGHT'),
+        'LEFT': ((-1, 0), 'UP', 'DOWN', 'LEFT', 'LEFT'),
+        'RIGHT': ((1, 0), 'UP', 'DOWN', 'RIGHT', 'RIGHT'),
     }
 
     def __init__(self, blocks, block_len, random,

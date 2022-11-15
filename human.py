@@ -5,6 +5,9 @@ import gym_snake
 from rl.model import DQN
 import torch
 import numpy as np
+import keyboard
+
+import random
 
 
 class Agent:
@@ -22,10 +25,19 @@ class Agent:
 
 
 def main(load_path, render, times, seed, block_size, blocks):
+    keyboard.add_hotkey('w', activity('UP'))
+    keyboard.add_hotkey('a', activity('LEFT'))
+    keyboard.add_hotkey('s', activity('DOWN'))
+    keyboard.add_hotkey('d', activity('RIGHT'))
+
     env = get_env(seed, block_size, blocks)
     agent = Agent(env.observation_space.shape[0], env.action_space.n, load_path, seed)
     watch_agent(agent, env, times, render)
 
+
+
+def activity(key):
+    print(key)
 
 def get_env(seed, block_size, blocks):
     env = gym.make('Snake-v0', block_size=block_size, blocks=blocks)
@@ -41,12 +53,22 @@ def watch_agent(agent, env, times, render):
         state = env.reset()
         score = 0
         steps_after_last_apple = 0
-
+        action = 1
         while True:
             if render:
                 env.render()
-                sleep(0.05)
-            action = agent.act(state)
+                #sleep(0.5)
+            #action = agent.act(state)
+            
+            #keyboard.hook(activity)
+            #action = random.randint(1,4)
+
+            if keyboard.is_pressed('w'):    action = 1
+            if keyboard.is_pressed('s'):    action = 2
+            if keyboard.is_pressed('a'):    action = 3
+            if keyboard.is_pressed('d'):    action = 4
+            sleep(0.5)
+
             state, reward, done, info = env.step(action)
             score += reward
             if done:
