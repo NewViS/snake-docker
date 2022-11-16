@@ -5,7 +5,7 @@ import numpy as np
 from flask import Flask
 from flask_socketio import *
 
-from gym_snake.envs.snake import Snake
+from snake import Snake
 
 import logging
 
@@ -85,12 +85,24 @@ class SnakeEnv(gym.Env):
 app=Flask(__name__)
 app.config['SECRET_KEY']='secret!'
 socketio = SocketIO(app)
-env = None
+SE = SnakeEnv()
 
 @socketio.on('create_env')
-def create_env(self, arg):
-    self.env = gym.make('Snake-v0', block_size=arg[0], blocks=arg[1])
-    self.env.seed(arg[2])
+def create_env(arg):
+    SE.env = gym.make('Snake-v0', block_size=arg[0], blocks=arg[1])
+    SE.env.seed(arg[2])
+
+@socketio.on('env_reset')
+def env_res():
+    SE.env.reset()
+
+@socketio.on('env_close')
+def env_close():
+    SE.env.close()
+
+@socketio.on('do_step')
+def step(action):
+    SE.env.step(action)
 
 @socketio.on('connect')
 def connect (auth):
@@ -102,5 +114,22 @@ def disconnect():
     print('Client disconnected')
 
 @socketio.on('render_server')
-def getW(self):
-    emit('render_client', w = self.snake.blockw)
+def getW():
+    emit('render_client', SE.snake.blockw)
+
+@socketio.on('join')
+def on_join(data):
+    username = data['username']
+    room = data['room']
+    join_room(room)
+    send(username + ' has entered the room.', to=room)
+
+@socketio.on('leave')
+def on_leave(data):
+    username = data['username']
+    room = data['room']
+    leave_room(room)
+    send(username + ' has left the room.', to=room)
+
+if __name__ == '__main__':
+    socketio.run(app)

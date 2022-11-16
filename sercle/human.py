@@ -2,7 +2,7 @@ import argparse
 from time import sleep
 import gym
 import socketio
-import gym_snake.envs.snake_env
+#import gym_snake.envs.snake_env
 import numpy as np
 import keyboard
 
@@ -24,12 +24,12 @@ def main(load_path, render, times, seed, block_size, blocks):
     sio.connect('http://127.0.0.1:5000',  wait=True, wait_timeout= 5)
 
     #env = get_env(seed, block_size, blocks)
-    sio.emit('create_env', arg=[block_size,blocks,seed])
+    sio.emit('create_env', [block_size,blocks,seed])
     
     watch_agent(times, render)
 
 @sio.on('render_client')
-def render(self, w, mode='human'):
+def render(self, w):
         from gym.envs.classic_control import rendering
         #w = self.snake.blockw
         
@@ -93,12 +93,12 @@ def get_env(seed, block_size, blocks):
     return env
 
 
-def watch_agent(env, times, render):
+def watch_agent(times, render):
     scores = []
     apples = []
 
     for i in range(1, times + 1):
-        state = env.reset()
+        sio.emit('env_reset')
         score = 0
         steps_after_last_apple = 0
         action = 1
@@ -118,7 +118,8 @@ def watch_agent(env, times, render):
             if keyboard.is_pressed('a'):    action = 3
             if keyboard.is_pressed('d'):    action = 4
 
-            state, reward, done, info = env.step(action)
+            sio.emit('do_step', action)
+            """state, reward, done, info = env.step(action)
             score += reward
             if done:
                 break
@@ -133,8 +134,9 @@ def watch_agent(env, times, render):
         apples.append(info['apples'])
         print(f'\rEpisode {i}\t'
               f'Average apples: {np.mean(apples):.2f}\t'
-              f'Average score: {np.mean(scores):.2f}', end='')
-    env.close()
+              f'Average score: {np.mean(scores):.2f}', end='')"""
+    
+    sio.emit('env_close')
 
 
 if __name__ == '__main__':
