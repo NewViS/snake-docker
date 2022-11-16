@@ -6,6 +6,7 @@ from flask import Flask
 from flask_socketio import *
 
 from snake import Snake
+import init_snake
 
 import logging
 
@@ -67,7 +68,7 @@ class SnakeEnv(gym.Env):
 
         state = np.array(raw_state[0], dtype=np.float32)
         state /= self.blocks
-
+        print('new snake')
         return state
 
     def render(self, mode='human'):
@@ -84,6 +85,9 @@ class SnakeEnv(gym.Env):
 
 app=Flask(__name__)
 app.config['SECRET_KEY']='secret!'
+
+init_snake.register
+
 socketio = SocketIO(app)
 SE = SnakeEnv()
 
@@ -95,6 +99,7 @@ def create_env(arg):
 @socketio.on('env_reset')
 def env_res():
     SE.env.reset()
+    print('reseted')
 
 @socketio.on('env_close')
 def env_close():

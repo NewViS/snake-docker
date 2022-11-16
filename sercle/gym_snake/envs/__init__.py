@@ -1,1 +1,1 @@
-from gym_snake.envs.snake_env import SnakeEnv
+from snake_env import SnakeEnv
